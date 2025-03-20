@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <!-- Restaurant Header -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            {% if restaurant.image %}
+                <img src="{{ restaurant.image.url }}" alt="{{ restaurant.name }}" class="img-fluid rounded">
+            {% else %}
+                <img src="{% static 'images/default-restaurant.jpg' %}" alt="{{ restaurant.name }}" class="img-fluid rounded">
+            {% endif %}
+        </div>
+        <div class="col-md-8">
+            <h1>{{ restaurant.name }}</h1>
+            <p class="lead">{{ restaurant.description }}</p>
+            <div class="mb-3">
+                <i class="fas fa-map-marker-alt"></i> {{ restaurant.location }}
+            </div>
+            <div class="mb-3">
+                <i class="fas fa-phone"></i> {{ restaurant.phone }}
+            </div>
+            {% if restaurant.email %}
+                <div class="mb-3">
+                    <i class="fas fa-envelope"></i> {{ restaurant.email }}
+                </div>
+            {% endif %}
+            {% if restaurant.opening_hours %}
+                <div class="mb-3">
+                    <i class="fas fa-clock"></i> {{ restaurant.opening_hours }}
+                </div>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Menu Section -->
+    <div class="row">
+        <div class="col-12">
+            <h2 class="mb-4">Menu</h2>
+            
+            {% regroup menu_items by category as category_list %}
+            {% for category in category_list %}
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h3 class="mb-0">{{ category.grouper|title }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            {% for item in category.list %}
+                                <div class="col-md-6 mb-4">
+                                    <div class="card h-100">
+                                        {% if item.image %}
+                                            <img src="{{ item.image.url }}" alt="{{ item.name }}" class="card-img-top">
+                                        {% endif %}
+                                        <div class="card-body">
+                                            <h5 class="card-title">{{ item.name }}</h5>
+                                            <p class="card-text">{{ item.description }}</p>
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <span class="h5 mb-0">${{ item.price }}</span>
+                                                {% if not item.is_available %}
+                                                    <span class="badge bg-danger">Not Available</span>
+                                                {% endif %}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <div class="alert alert-info">
+                    No menu items available at the moment.
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %} 
