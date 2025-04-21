@@ -49,7 +49,7 @@
                         <div class="row">
                             {% for item in category.list %}
                                 <div class="col-md-6 mb-4">
-                                    <div class="card h-100 menu-item-card" style="cursor: pointer;" data-bs-toggle="modal" data-bs-target="#menuItemModal{{ item.id }}">
+                                    <div class="card h-100">
                                         {% if item.image %}
                                             <img src="{{ item.image.url }}" alt="{{ item.name }}" class="card-img-top">
                                         {% endif %}
@@ -62,46 +62,9 @@
                                                     <span class="badge bg-danger">Not Available</span>
                                                 {% endif %}
                                             </div>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Modal for each menu item -->
-                                <div class="modal fade" id="menuItemModal{{ item.id }}" tabindex="-1" aria-labelledby="menuItemModalLabel{{ item.id }}" aria-hidden="true">
-                                    <div class="modal-dialog modal-lg">
-                                        <div class="modal-content">
-                                            <div class="modal-header">
-                                                <h5 class="modal-title" id="menuItemModalLabel{{ item.id }}">{{ item.name }}</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                                            </div>
-                                            <div class="modal-body">
-                                                <div class="row">
-                                                    <div class="col-md-6">
-                                                        {% if item.image %}
-                                                            <img src="{{ item.image.url }}" alt="{{ item.name }}" class="img-fluid rounded mb-3">
-                                                        {% endif %}
-                                                        <h6 class="text-muted">Category</h6>
-                                                        <p>{{ item.category|title }}</p>
-                                                    </div>
-                                                    <div class="col-md-6">
-                                                        <h6 class="text-muted">Price</h6>
-                                                        <p class="h4">${{ item.price }}</p>
-                                                        <h6 class="text-muted mt-3">Availability</h6>
-                                                        {% if item.is_available %}
-                                                            <span class="badge bg-success">Available</span>
-                                                        {% else %}
-                                                            <span class="badge bg-danger">Not Available</span>
-                                                        {% endif %}
-                                                    </div>
-                                                </div>
-                                                <div class="mt-3">
-                                                    <h6 class="text-muted">Description</h6>
-                                                    <p>{{ item.description }}</p>
-                                                </div>
-                                            </div>
-                                            <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                            </div>
+                                            <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#menuItemModal{{ item.id }}">
+                                                View Details
+                                            </button>
                                         </div>
                                     </div>
                                 </div>
@@ -116,16 +79,304 @@
             {% endfor %}
         </div>
     </div>
+
+    <!-- Modals Section - Moved outside the menu loop -->
+    {% for category in category_list %}
+        {% for item in category.list %}
+            <div class="modal fade" id="menuItemModal{{ item.id }}" tabindex="-1" aria-labelledby="menuItemModalLabel{{ item.id }}" aria-hidden="true">
+                <div class="modal-dialog modal-lg">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="menuItemModalLabel{{ item.id }}">{{ item.name }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    {% if item.image %}
+                                        <img src="{{ item.image.url }}" alt="{{ item.name }}" class="img-fluid rounded mb-3">
+                                    {% endif %}
+                                    <h6 class="text-muted">Category</h6>
+                                    <p>{{ item.category|title }}</p>
+                                </div>
+                                <div class="col-md-6">
+                                    <h6 class="text-muted">Price</h6>
+                                    <p class="h4">${{ item.price }}</p>
+                                    <h6 class="text-muted mt-3">Availability</h6>
+                                    {% if item.is_available %}
+                                        <span class="badge bg-success">Available</span>
+                                    {% else %}
+                                        <span class="badge bg-danger">Not Available</span>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="mt-3">
+                                <h6 class="text-muted">Description</h6>
+                                <p>{{ item.description }}</p>
+                            </div>
+
+                            <!-- Rating Section for Menu Item -->
+                            <div class="mt-4">
+                                <h5>Rate this Dish</h5>
+                                <form method="post" action="{% url 'restaurants:rate_menu_item' menu_item_id=item.id %}" class="rating-form" id="ratingForm{{ item.id }}">
+                                    {% csrf_token %}
+                                    <div class="form-group text-center">
+                                        <div class="btn-group" role="group" aria-label="Rating">
+                                            {% for i in "12345" %}
+                                                <input type="radio" class="btn-check" name="rating" id="dishRating{{ forloop.counter }}_{{ item.id }}" value="{{ forloop.counter }}" autocomplete="off">
+                                                <label class="btn btn-outline-warning" for="dishRating{{ forloop.counter }}_{{ item.id }}">
+                                                    <i class="fas fa-star"></i>
+                                                </label>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-3">
+                                        <textarea name="comment" class="form-control" rows="2" placeholder="Add a comment about this dish (optional)"></textarea>
+                                    </div>
+                                    <div class="text-center mt-3">
+                                        <button type="submit" class="btn btn-primary">Submit Rating</button>
+                                    </div>
+                                </form>
+                            </div>
+
+                            <!-- Recent Ratings for Menu Item -->
+                            <div class="mt-4" id="reviewsSection{{ item.id }}">
+                                <h5>Recent Reviews</h5>
+                                <div class="reviews-container">
+                                    {% for rating in item.ratings.all|slice:":3" %}
+                                        <div class="rating-item p-3 border rounded mb-2">
+                                            <div class="text-warning">
+                                                {% for i in "12345" %}
+                                                    {% if forloop.counter <= rating.rating %}
+                                                        <i class="fas fa-star"></i>
+                                                    {% else %}
+                                                        <i class="far fa-star"></i>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            </div>
+                                            {% if rating.comment %}
+                                                <p class="mb-1 mt-2">{{ rating.comment }}</p>
+                                            {% endif %}
+                                            <small class="text-muted">{{ rating.created_at|date:"F j, Y" }}</small>
+                                        </div>
+                                    {% empty %}
+                                        <p class="text-muted">No reviews yet. Be the first to review!</p>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endfor %}
+    {% endfor %}
+
+    <!-- Rating System -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h2 class="card-title text-center mb-4">Rate this Restaurant</h2>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="text-center mb-4">
+                                <h3>Average Rating</h3>
+                                {% if average_rating %}
+                                    <h2 class="text-primary display-4">{{ average_rating|floatformat:1 }} <small class="text-muted">/ 5</small></h2>
+                                    <div class="text-warning" style="font-size: 2rem;">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= average_rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                {% else %}
+                                    <p class="lead">No ratings yet. Be the first to rate!</p>
+                                {% endif %}
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="rating-form-container">
+                                <form method="post" class="rating-form">
+                                    {% csrf_token %}
+                                    <div class="form-group text-center">
+                                        <div class="btn-group" role="group" aria-label="Rating">
+                                            {% for choice in form.rating %}
+                                                <input type="radio" class="btn-check" name="rating" id="rating{{ forloop.counter }}" value="{{ forloop.counter }}" autocomplete="off">
+                                                <label class="btn btn-outline-warning" for="rating{{ forloop.counter }}">
+                                                    <i class="fas fa-star"></i>
+                                                </label>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+                                    <div class="form-group mt-4">
+                                        <textarea name="comment" class="form-control" rows="3" placeholder="Add a comment (optional)"></textarea>
+                                    </div>
+                                    <div class="text-center mt-3">
+                                        <button type="submit" class="btn btn-primary btn-lg">Submit Rating</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Recent Ratings -->
+    <div class="row mt-4">
+        <div class="col-12">
+            <div class="card shadow">
+                <div class="card-body">
+                    <h3 class="card-title text-center mb-4">Recent Reviews</h3>
+                    <div class="row">
+                        {% for rating in ratings %}
+                            <div class="col-md-6 mb-3">
+                                <div class="rating-item p-3 border rounded">
+                                    <div class="text-warning" style="font-size: 1.5rem;">
+                                        {% for i in "12345" %}
+                                            {% if forloop.counter <= rating.rating %}
+                                                <i class="fas fa-star"></i>
+                                            {% else %}
+                                                <i class="far fa-star"></i>
+                                            {% endif %}
+                                        {% endfor %}
+                                    </div>
+                                    {% if rating.comment %}
+                                        <p class="mb-2 mt-2">{{ rating.comment }}</p>
+                                    {% endif %}
+                                    <small class="text-muted">{{ rating.created_at|date:"F j, Y" }}</small>
+                                </div>
+                            </div>
+                        {% empty %}
+                            <div class="col-12 text-center">
+                                <p class="lead">No reviews yet. Be the first to review!</p>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
 
-<!-- Add hover effect to menu item cards -->
 <style>
-    .menu-item-card {
-        transition: transform 0.2s, box-shadow 0.2s;
+    .rating-form .btn-group {
+        gap: 5px;
     }
-    .menu-item-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    .rating-form .btn-outline-warning {
+        font-size: 1.5rem;
+        padding: 0.5rem 1rem;
+    }
+    .rating-form .btn-check:checked + .btn-outline-warning {
+        background-color: #ffc107;
+        border-color: #ffc107;
+        color: #000;
+    }
+    .rating-form .btn-outline-warning:hover {
+        background-color: #ffc107;
+        border-color: #ffc107;
+        color: #000;
+    }
+    .rating-item {
+        background-color: #f8f9fa;
+        border-radius: 5px;
+        height: 100%;
+    }
+    .card.shadow {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15) !important;
     }
 </style>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Manejar todos los formularios de calificación
+    document.querySelectorAll('.rating-form').forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const itemId = this.id.replace('ratingForm', '');
+            const reviewsSection = document.querySelector(`#reviewsSection${itemId} .reviews-container`);
+
+            fetch(this.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    // Crear nueva reseña
+                    const newReview = document.createElement('div');
+                    newReview.className = 'rating-item p-3 border rounded mb-2';
+                    
+                    // Crear estrellas
+                    const starsDiv = document.createElement('div');
+                    starsDiv.className = 'text-warning';
+                    const rating = formData.get('rating');
+                    starsDiv.innerHTML = Array(5).fill(0).map((_, i) => 
+                        `<i class="fas fa-star${i < rating ? '' : '-regular'}"></i>`
+                    ).join('');
+                    
+                    // Agregar comentario si existe
+                    const comment = formData.get('comment');
+                    const commentP = comment ? `<p class="mb-1 mt-2">${comment}</p>` : '';
+                    
+                    // Agregar fecha
+                    const date = new Date().toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                    });
+                    
+                    newReview.innerHTML = `
+                        ${starsDiv.outerHTML}
+                        ${commentP}
+                        <small class="text-muted">${date}</small>
+                    `;
+
+                    // Insertar la nueva reseña al principio
+                    if (reviewsSection.firstChild) {
+                        reviewsSection.insertBefore(newReview, reviewsSection.firstChild);
+                    } else {
+                        reviewsSection.innerHTML = '';
+                        reviewsSection.appendChild(newReview);
+                    }
+
+                    // Limpiar el formulario
+                    form.reset();
+                    
+                    // Mostrar mensaje de éxito
+                    const alert = document.createElement('div');
+                    alert.className = 'alert alert-success mt-2';
+                    alert.textContent = 'Thank you for your rating!';
+                    form.appendChild(alert);
+                    
+                    // Remover el mensaje después de 3 segundos
+                    setTimeout(() => alert.remove(), 3000);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                const alert = document.createElement('div');
+                alert.className = 'alert alert-danger mt-2';
+                alert.textContent = 'Error submitting rating. Please try again.';
+                form.appendChild(alert);
+                setTimeout(() => alert.remove(), 3000);
+            });
+        });
+    });
+});
+</script>
 {% endblock %} 

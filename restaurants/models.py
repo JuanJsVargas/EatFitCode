@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils import timezone
+from django.contrib.auth.models import User
 
 class Restaurant(models.Model):
     name = models.CharField(max_length=100)
@@ -39,3 +40,31 @@ class MenuItem(models.Model):
 
     class Meta:
         ordering = ['category', 'name']
+
+class Rating(models.Model):
+    restaurant = models.ForeignKey(Restaurant, related_name='ratings', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='restaurant_ratings', on_delete=models.CASCADE)
+    rating = models.IntegerField(choices=[(1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5')])
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.rating} stars for {self.restaurant.name} by {self.user.username}"
+
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ['restaurant', 'user']
+
+class MenuItemRating(models.Model):
+    menu_item = models.ForeignKey(MenuItem, related_name='ratings', on_delete=models.CASCADE)
+    user = models.ForeignKey(User, related_name='menu_item_ratings', on_delete=models.CASCADE)
+    rating = models.IntegerField(choices=[(1, '1'), (2, '2'), (3, '3'), (4, '4'), (5, '5')])
+    comment = models.TextField(blank=True)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.rating} stars for {self.menu_item.name} by {self.user.username}"
+
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ['menu_item', 'user']

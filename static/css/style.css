@@ -1,0 +1,227 @@
+/* Custom styles for EatFit */
+
+:root {
+    --primary: #5647ED;
+    --primary-hover: #4538d4;
+    --accent: #4FF038;
+    --accent-hover: #45d632;
+    --neutral: #EBEBEB;
+    --neutral-dark: #d4d4d4;
+    --text-dark: #333333;
+    --text-light: #ffffff;
+}
+
+body {
+    background-color: var(--neutral);
+    color: var(--text-dark);
+}
+
+/* Hero Section */
+.hero-logo {
+    height: 120px;
+    width: auto;
+    margin-bottom: 2rem;
+    animation: float 6s ease-in-out infinite;
+}
+
+@keyframes float {
+    0% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-10px);
+    }
+    100% {
+        transform: translateY(0px);
+    }
+}
+
+/* Navbar customization */
+.navbar, .navbar.bg-body-tertiary {
+    background-color: #4FF038 !important;
+    box-shadow: 0 2px 4px rgba(0,0,0,.1);
+}
+
+.navbar-brand {
+    color: var(--text-dark) !important;
+    font-weight: 600;
+}
+
+.navbar-logo {
+    height: 40px;
+    width: auto;
+    transition: transform 0.3s ease;
+}
+
+.navbar-brand:hover .navbar-logo {
+    transform: rotate(-5deg);
+}
+
+.brand-name {
+    font-size: 1.5rem;
+    display: block;
+    line-height: 1.2;
+}
+
+.navbar-slogan {
+    font-size: 0.9rem;
+    opacity: 0.9;
+    display: block;
+    font-style: italic;
+    font-weight: normal;
+}
+
+.nav-link {
+    color: var(--text-dark) !important;
+    font-weight: 600;
+}
+
+.nav-link:hover {
+    color: var(--primary) !important;
+    opacity: 0.9;
+}
+
+/* Card hover effect */
+.card {
+    background-color: white;
+    border: none;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+    cursor: pointer;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(86, 71, 237, 0.2);
+    transition: all 0.3s ease;
+}
+
+/* Button styles */
+.btn-primary {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--text-light);
+}
+
+.btn-primary:hover {
+    background-color: var(--primary-hover);
+    border-color: var(--primary-hover);
+}
+
+.btn-accent {
+    background-color: var(--accent);
+    border-color: var(--accent);
+    color: var(--text-dark);
+}
+
+.btn-accent:hover {
+    background-color: var(--accent-hover);
+    border-color: var(--accent-hover);
+}
+
+/* Form styles */
+.form-control:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.25rem rgba(86, 71, 237, 0.25);
+}
+
+/* Alert messages */
+.alert {
+    border-radius: 0.5rem;
+}
+
+.alert-success {
+    background-color: var(--accent);
+    border-color: var(--accent-hover);
+    color: var(--text-dark);
+}
+
+/* Footer */
+footer {
+    margin-top: auto;
+}
+
+/* Footer logo */
+.footer-logo {
+    height: 60px;
+    width: auto;
+    margin: 1rem;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .navbar-brand {
+        font-size: 1.2rem;
+    }
+}
+
+/* Card header styling */
+.card-header {
+    background-color: var(--primary);
+    color: var(--text-light);
+}
+
+/* Rating stars */
+.btn-outline-warning {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+.btn-outline-warning:hover,
+.btn-check:checked + .btn-outline-warning {
+    background-color: var(--primary);
+    border-color: var(--primary);
+    color: var(--text-light);
+}
+
+.text-warning {
+    color: var(--primary) !important;
+}
+
+/* Modal styling */
+.modal-header {
+    background-color: var(--primary);
+    color: var(--text-light);
+}
+
+.modal-header .btn-close {
+    color: var(--text-light);
+    opacity: 1;
+}
+
+/* Search bar styling */
+.search-form .form-control {
+    border: 2px solid var(--primary);
+}
+
+.search-form .btn {
+    background-color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* Badge styling */
+.badge.bg-success {
+    background-color: var(--accent) !important;
+    color: var(--text-dark);
+}
+
+.badge.bg-danger {
+    background-color: #ff4444 !important;
+}
+
+/* Rating item styling */
+.rating-item {
+    background-color: white;
+    transition: transform 0.2s;
+}
+
+.rating-item:hover {
+    transform: translateY(-2px);
+}
+
+/* Restaurant card hover effect */
+.card.h-100:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(86, 71, 237, 0.2);
+    transition: all 0.3s ease;
+} 
