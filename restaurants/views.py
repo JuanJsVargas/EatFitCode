@@ -5,7 +5,7 @@ from django.contrib import messages
 from django.db import models
 from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
-from django.db.models import Avg, StdDev, FloatField
+from django.db.models import Avg, StdDev, FloatField, Count
 from django.db.models.functions import Coalesce
 
 # Create your views here.
@@ -16,6 +16,10 @@ def restaurant_list(request):
         restaurants = Restaurant.objects.filter(name__icontains=query)
     else:
         restaurants = Restaurant.objects.all()
+    # Annotate average rating for each restaurant
+    restaurants = restaurants.annotate(
+        avg_rating=Coalesce(Avg('ratings__rating', output_field=FloatField()), 0.0)
+    )
     return render(request, 'restaurants/restaurant_list.html', {
         'restaurants': restaurants,
         'query': query
@@ -183,4 +187,13 @@ def best_deals(request):
     items_with_score.sort(key=lambda x: x[1], reverse=True)
     return render(request, 'restaurants/best_deals.html', {
         'items_with_score': items_with_score
+    })
+
+def top_restaurants(request):
+    restaurants = Restaurant.objects.annotate(
+        avg_rating=Coalesce(Avg('ratings__rating', output_field=FloatField()), 0.0),
+        num_reviews=Count('ratings')
+    ).order_by('-avg_rating', '-num_reviews')
+    return render(request, 'restaurants/top_restaurants.html', {
+        'restaurants': restaurants
     })

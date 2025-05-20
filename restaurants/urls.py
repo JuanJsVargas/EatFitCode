@@ -12,4 +12,5 @@ urlpatterns = [
     path('menu-item/<int:menu_item_id>/toggle-favorite/', views.toggle_favorite, name='toggle_favorite'),
     path('favorites/', views.favorites_list, name='favorites_list'),
     path('best-deals/', views.best_deals, name='best_deals'),
+    path('top-restaurants/', views.top_restaurants, name='top_restaurants'),
 ] 
