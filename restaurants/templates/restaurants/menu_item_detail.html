@@ -9,8 +9,8 @@
                 <div class="card-body">
                     <h1 class="card-title">{{ menu_item.name }}</h1>
                     <p class="card-text">{{ menu_item.description }}</p>
-                    <p class="card-text"><strong>Precio:</strong> ${{ menu_item.price }}</p>
-                    <p class="card-text"><strong>Restaurante:</strong> {{ menu_item.restaurant.name }}</p>
+                    <p class="card-text"><strong>Price:</strong> ${{ menu_item.price }}</p>
+                    <p class="card-text"><strong>Restaurant:</strong> {{ menu_item.restaurant.name }}</p>
                     {% if user.is_authenticated %}
                         <button class="btn btn-outline-danger favorite-btn" data-menu-item-id="{{ menu_item.id }}">
                             <i class="fas fa-heart"></i> 
@@ -22,40 +22,40 @@
 
             <div class="card mt-4">
                 <div class="card-header">
-                    <h3>Calificaciones</h3>
+                    <h3>Ratings</h3>
                 </div>
                 <div class="card-body">
                     {% if user.is_authenticated %}
                     <form id="rating-form" method="POST" action="{% url 'restaurants:rate_menu_item' menu_item.id %}">
                         {% csrf_token %}
                         <div class="mb-3">
-                            <label for="rating" class="form-label">Tu calificación:</label>
+                            <label for="rating" class="form-label">Your rating:</label>
                             <select class="form-select" id="rating" name="rating" required>
-                                <option value="1">1 - Muy malo</option>
-                                <option value="2">2 - Malo</option>
-                                <option value="3">3 - Regular</option>
-                                <option value="4">4 - Bueno</option>
-                                <option value="5">5 - Excelente</option>
+                                <option value="1">1 - Very Poor</option>
+                                <option value="2">2 - Poor</option>
+                                <option value="3">3 - Average</option>
+                                <option value="4">4 - Good</option>
+                                <option value="5">5 - Excellent</option>
                             </select>
                         </div>
                         <div class="mb-3">
-                            <label for="comment" class="form-label">Tu comentario:</label>
+                            <label for="comment" class="form-label">Your comment:</label>
                             <textarea class="form-control" id="comment" name="comment" rows="3"></textarea>
                         </div>
-                        <button type="submit" class="btn btn-primary">Enviar calificación</button>
+                        <button type="submit" class="btn btn-primary">Submit Rating</button>
                     </form>
                     {% else %}
-                    <p>Por favor <a href="{% url 'users:login' %}">inicia sesión</a> para calificar este item.</p>
+                    <p>Please <a href="{% url 'users:login' %}">log in</a> to rate this item.</p>
                     {% endif %}
 
                     <div class="mt-4">
-                        <h4>Calificaciones anteriores</h4>
+                        <h4>Previous Ratings</h4>
                         {% for rating in menu_item.ratings.all %}
                         <div class="card mb-3">
                             <div class="card-body">
                                 <h5 class="card-title">{{ rating.user.username }}</h5>
                                 <p class="card-text">
-                                    <strong>Calificación:</strong> {{ rating.rating }}/5
+                                    <strong>Rating:</strong> {{ rating.rating }}/5
                                 </p>
                                 {% if rating.comment %}
                                 <p class="card-text">{{ rating.comment }}</p>
@@ -64,7 +64,7 @@
                             </div>
                         </div>
                         {% empty %}
-                        <p>No hay calificaciones aún.</p>
+                        <p>No ratings yet.</p>
                         {% endfor %}
                     </div>
                 </div>
