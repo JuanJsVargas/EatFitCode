@@ -11,6 +11,12 @@
                     <p class="card-text">{{ menu_item.description }}</p>
                     <p class="card-text"><strong>Precio:</strong> ${{ menu_item.price }}</p>
                     <p class="card-text"><strong>Restaurante:</strong> {{ menu_item.restaurant.name }}</p>
+                    {% if user.is_authenticated %}
+                        <button class="btn btn-outline-danger favorite-btn" data-menu-item-id="{{ menu_item.id }}">
+                            <i class="fas fa-heart"></i> 
+                            <span class="favorite-text">Add to Favorites</span>
+                        </button>
+                    {% endif %}
                 </div>
             </div>
 
@@ -95,6 +101,51 @@ document.getElementById('rating-form').addEventListener('submit', function(e) {
         alert('Error al enviar la calificación. Por favor intenta de nuevo.');
     });
 });
+
+// Add favorite button functionality
+document.addEventListener('DOMContentLoaded', function() {
+    const favoriteBtn = document.querySelector('.favorite-btn');
+    if (favoriteBtn) {
+        favoriteBtn.addEventListener('click', function() {
+            const menuItemId = this.dataset.menuItemId;
+            fetch(`/menu-item/${menuItemId}/toggle-favorite/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const favoriteText = this.querySelector('.favorite-text');
+                if (data.is_favorite) {
+                    this.classList.add('btn-danger');
+                    this.classList.remove('btn-outline-danger');
+                    favoriteText.textContent = 'Remove from Favorites';
+                } else {
+                    this.classList.add('btn-outline-danger');
+                    this.classList.remove('btn-danger');
+                    favoriteText.textContent = 'Add to Favorites';
+                }
+            });
+        });
+    }
+});
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
 </script>
 {% endblock %}
 {% endblock %} 

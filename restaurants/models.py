@@ -68,3 +68,15 @@ class MenuItemRating(models.Model):
     class Meta:
         ordering = ['-created_at']
         unique_together = ['menu_item', 'user']
+
+class Favorite(models.Model):
+    user = models.ForeignKey(User, related_name='favorites', on_delete=models.CASCADE)
+    menu_item = models.ForeignKey(MenuItem, related_name='favorited_by', on_delete=models.CASCADE)
+    created_at = models.DateTimeField(default=timezone.now)
+
+    def __str__(self):
+        return f"{self.user.username}'s favorite: {self.menu_item.name}"
+
+    class Meta:
+        ordering = ['-created_at']
+        unique_together = ['user', 'menu_item']
